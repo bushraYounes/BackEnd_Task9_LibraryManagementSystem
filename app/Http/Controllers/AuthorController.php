@@ -4,15 +4,25 @@ namespace App\Http\Controllers;
 
 use App\Models\Author;
 use Illuminate\Http\Request;
+use App\Http\Traits\ResponseTrait;
+use Illuminate\Support\Facades\Log;
+use App\Http\Resources\AuthorResource;
 
 class AuthorController extends Controller
 {
+    use ResponseTrait;
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        try {
+            $authors = Author::with('books')->get();
+            return $this->jsonResponse(AuthorResource::collection($authors), 'Success', 200);
+        } catch (\Throwable $th) {
+            Log::error($th);
+            return $this->jsonResponse(null, "Failed", 400);
+        }
     }
 
     /**
