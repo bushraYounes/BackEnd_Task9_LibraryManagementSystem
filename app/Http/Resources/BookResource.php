@@ -21,7 +21,7 @@ class BookResource extends JsonResource
             'edition' => $this->edition,
             'year' => $this->year,
             'price' => $this->price,
-            'authors'=> $this->authors(),
+            'authors' => $this->authors->pluck('full_name')
         ];
     }
 }

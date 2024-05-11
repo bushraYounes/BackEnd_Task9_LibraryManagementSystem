@@ -37,4 +37,9 @@ class Author extends Model
     {
         $this->attributes['last_name'] = ucfirst($value);
     }
+
+    public function getFullNameAttribute()
+    {
+        return ucfirst($this->attributes['first_name'])." ".ucfirst($this->attributes['last_name']);
+    }
 }
