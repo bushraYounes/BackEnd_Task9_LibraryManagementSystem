@@ -87,4 +87,23 @@ class ReviewController extends Controller
             return $this->jsonResponse(null, 'update Failed', 200);
         }
     }
+
+    public function destroy($id)
+    {
+        try {
+            $review = Review::findOrFail($id);
+            $userController = new UserController();
+            $user = Auth::user();
+            // Check if the authenticated user is the original reviewer or an admin
+            if ($review->user_id == $user->id || $userController->isAdmin($user)) {
+                $review->delete();
+                return $this->jsonResponse('', 'Delete Success', 200);
+            } else {
+                return $this->jsonResponse(null, 'Unauthorized', 401);
+            }
+        } catch (\Throwable $th) {
+            Log::error($th);
+            return $this->jsonResponse(null, 'update Failed', 200);
+        }
+    }
 }
