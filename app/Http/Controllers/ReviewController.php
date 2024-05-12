@@ -45,4 +45,17 @@ class ReviewController extends Controller
             return $this->jsonResponse(null, 'Store Failed', 200);
         }
     }
+
+    public function index()
+    {
+        try {
+            $reviews = Review::all();
+            return $this->jsonResponse(ReviewResource::collection($reviews), 'Success', 200);
+        } catch (\Throwable $th) {
+            Log::error($th);
+            return $this->jsonResponse(null, 'index Failed', 200);
+        }
+
+     
+    }
 }
