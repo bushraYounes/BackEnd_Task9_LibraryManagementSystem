@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\AuthorStoreRequest;
-use App\Http\Requests\AuthorUpdateRequest;
 use App\Models\Author;
 use Illuminate\Http\Request;
 use App\Http\Traits\ResponseTrait;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Http\Resources\AuthorResource;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use App\Http\Resources\AuthorResource;
+use App\Http\Requests\AuthorStoreRequest;
+use App\Http\Requests\AuthorUpdateRequest;
 
 class AuthorController extends Controller
 {
@@ -21,7 +22,15 @@ class AuthorController extends Controller
     public function index()
     {
         try {
-            $authors = Author::with('books')->get();
+            $cacheKey = 'authors';
+            if (Cache::has($cacheKey)) {
+                $authors = Cache::get($cacheKey);
+            } else {
+                $authors = Author::with('books')->get();
+
+                // Store authors in cache
+                Cache::put($cacheKey, $authors, 60);
+            }
             return $this->jsonResponse(AuthorResource::collection($authors), 'Success', 200);
         } catch (\Throwable $th) {
             Log::error($th);
@@ -50,7 +59,7 @@ class AuthorController extends Controller
             DB::rollBack();
             Log::error($th);
             return $this->jsonResponse(null, 'Store Failed', 200);
-        }  
+        }
     }
 
     /**
@@ -81,8 +90,8 @@ class AuthorController extends Controller
             if (isset($request->last_name)) {
                 $newData['last_name'] = $request->last_name;
             }
-            
-            
+
+
             $author->update($newData);
 
             if (isset($request->book_ids)) {

@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Resources\BookResource;
 use App\Http\Requests\BookStoreRequest;
 use App\Http\Requests\BookUpdateRequest;
+use Illuminate\Support\Facades\Cache;
+
 
 class BookController extends Controller
 {
@@ -19,7 +21,15 @@ class BookController extends Controller
     public function index()
     {
         try {
-            $books = Book::with('authors')->get();
+            $cacheKey = 'books';
+            if (Cache::has($cacheKey)) {
+                $books = Cache::get($cacheKey);
+            } else {
+                $books = Book::with('authors')->get();
+
+                // Store books in cache
+                Cache::put($cacheKey, $books, 60);
+            }
             return $this->jsonResponse(BookResource::collection($books), 'Success', 200);
         } catch (\Throwable $th) {
             Log::error($th);
