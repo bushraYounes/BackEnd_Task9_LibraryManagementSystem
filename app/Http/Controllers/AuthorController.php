@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Cache;
 use App\Http\Resources\AuthorResource;
 use App\Http\Requests\AuthorStoreRequest;
 use App\Http\Requests\AuthorUpdateRequest;
+use App\Http\Helpers\CacheHelper;
+
 
 class AuthorController extends Controller
 {
@@ -22,15 +24,9 @@ class AuthorController extends Controller
     public function index()
     {
         try {
-            $cacheKey = 'authors';
-            if (Cache::has($cacheKey)) {
-                $authors = Cache::get($cacheKey);
-            } else {
-                $authors = Author::with('books')->get();
-
-                // Store authors in cache
-                Cache::put($cacheKey, $authors, 60);
-            }
+            $authors = CacheHelper::getCachedData('authors', function () {
+                return Author::with('books')->get();
+            });    
             return $this->jsonResponse(AuthorResource::collection($authors), 'Success', 200);
         } catch (\Throwable $th) {
             Log::error($th);
