@@ -295,13 +295,13 @@ define the seed,
         ]);
 ```
 ------------------------------------------
-### Step 5: Cache and Helpers
+## Step 5: Cache and Helpers
 we should cache for saving:
 - list of all Books
 - list of all Authors
 
 and we will use helper functions in the implementation:
-
+we created CacheHelper class with `getCachedData` method then we use it int each of AuthorController and BookController.
 
 ------------------------------------------------------------
 
