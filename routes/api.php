@@ -27,20 +27,26 @@ Route::middleware("auth:sanctum")->group(function () {
     Route::post('/reviews/authors/{author_id}', [ReviewController::class, 'storeAuthorReview']);
     Route::put('/reviews/{id}', [ReviewController::class, 'update']);
     Route::delete('/reviews/{id}', [ReviewController::class, 'destroy']);
+
+
+    Route::middleware('isAdmin')->group(function () {
+        Route::post('authors', [AuthorController::class, 'store']);
+        Route::put('authors/{author}', [AuthorController::class, 'update']);
+        Route::delete('authors/{author}', [AuthorController::class, 'destroy']);
+
+        Route::post('books', [BookController::class, 'store']);
+        Route::put('books/{book}', [BookController::class, 'update']);
+        Route::delete('books/{book}', [BookController::class, 'destroy']);
+    });
 });
 
 Route::get('authors', [AuthorController::class, 'index']);
 Route::get('authors/{author}', [AuthorController::class, 'show']);
-Route::post('authors', [AuthorController::class, 'store']);
-Route::put('authors/{author}', [AuthorController::class, 'update']);
-Route::delete('authors/{author}', [AuthorController::class, 'destroy']);
+
 
 
 Route::get('books', [BookController::class, 'index']);
 Route::get('books/{book}', [BookController::class, 'show']);
-Route::post('books', [BookController::class, 'store']);
-Route::put('books/{book}', [BookController::class, 'update']);
-Route::delete('books/{book}', [BookController::class, 'destroy']);
+
 
 Route::get('/reviews', [ReviewController::class, 'index']);
-
