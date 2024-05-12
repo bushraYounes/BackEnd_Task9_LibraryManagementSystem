@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('review');
             $table->morphs('reviewable');
+            $table->foreignId('user_id')->constrained();
             $table->timestamps();
         });
     }
