@@ -6,7 +6,7 @@ https://documenter.getpostman.com/view/34008000/2sA3JNZzdP
 
 # Laravel App
 
-Welcome to the Laravel App! This application provides a RESTful API for Library Management System.
+This application provides a RESTful API for Library Management System.
 
 # <span style="color:green">## Setup Instructions</span>
 
@@ -29,7 +29,7 @@ php artisan serve
 ------------------------------------------------------------------------------------------
 # <span style="color:green">Detailed Documentation</span>
 
-## <span style="color:red">Helped in Creating this Documentation "Obsidian note-taking"</span>
+## <span style="color:red">I created the first version of this Documentation using "Obsidian note-taking"</span>
 
 ### <span style="color:blue">Step 1: Book & Author CRUDs:</span>
 
@@ -280,3 +280,87 @@ then define routes:
 
 
 ----------------------------------------------
+### Step 4: user seeder
+create seeder file :
+```
+php artisan db:seed --class=UserSeeder
+```
+
+define the seed, 
+```
+        User::create([
+            'name' => 'admin',
+            'email' => 'admin@example.com',
+            'password' => Hash::make('12345'),
+        ]);
+```
+------------------------------------------
+### Step 5: Cache and Helpers
+we should cache for saving:
+- list of all Books
+- list of all Authors
+
+and we will use helper functions in the implementation:
+
+
+------------------------------------------------------------
+
+## Step 6: Authorisation and middleware: 
+
+we need to protect our apis, and only allow the authenticated and authorised users to access them:
+first there are few apis that the user should be logged in the system to to be able to access the,
+and other apis should be allowed to be accessed by admin.
+to implement the previous rules we need the pre defined middlewares provided by `sanctum` and we will create another middleware `isAdmin` to check if the logged in user is admin or not.
+
+#### isAdmin middleware:
+first create this middleware:
+`php artisan make:middleware AdminMiddleware`
+
+define the `handel` function where we check if the logged in user is admin or not.
+
+then add this middleware to `app/Http/Kernel.php` file,  within `$routeMiddleware`  to apply it selectively to specific routes:
+
+```
+protected $routeMiddleware = [
+    'isAdmin' => \App\Http\Middleware\AdminMiddleware`::class,
+];
+```
+
+##### Finally the Protected Routes with middlewares:
+
+```
+Route::post('/user/register', [UserController::class, 'createUser']);
+Route::post('/user/login', [UserController::class, 'loginUser']);
+
+  
+Route::middleware("auth:sanctum")->group(function () {
+
+    Route::post('/reviews/books/{book_id}', [ReviewController::class, 'storeBookReview']);
+    Route::post('/reviews/authors/{author_id}', [ReviewController::class, 'storeAuthorReview']);
+    Route::put('/reviews/{id}', [ReviewController::class, 'update']);
+    Route::delete('/reviews/{id}', [ReviewController::class, 'destroy']);
+
+
+    Route::middleware('isAdmin')->group(function () {
+        Route::post('authors', [AuthorController::class, 'store']);
+        Route::put('authors/{author}', [AuthorController::class, 'update']);
+        Route::delete('authors/{author}', [AuthorController::class, 'destroy']);
+  
+
+        Route::post('books', [BookController::class, 'store']);
+        Route::put('books/{book}', [BookController::class, 'update']);
+        Route::delete('books/{book}', [BookController::class, 'destroy']);
+    });
+});
+
+  
+Route::get('authors', [AuthorController::class, 'index']);
+Route::get('authors/{author}', [AuthorController::class, 'show']);
+
+
+Route::get('books', [BookController::class, 'index']);
+Route::get('books/{book}', [BookController::class, 'show']);
+
+Route::get('/reviews', [ReviewController::class, 'index']);
+```
+
