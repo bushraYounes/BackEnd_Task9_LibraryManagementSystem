@@ -29,6 +29,8 @@ php artisan serve
 ------------------------------------------------------------------------------------------
 ## Detailed Documentation
 
+### Helped in Creating this Documentation "Obsidian note-taking"
+
 ### Step 1: Book & Author CRUDs:
 
 we have Book and Author models with many-to-many relation, to implement the RESTFull APIs:
@@ -118,6 +120,11 @@ Route::post('books', [BookController::class, 'store']);
 Route::put('books/{book}', [BookController::class, 'update']);
 Route::delete('books/{book}', [BookController::class, 'destroy']);
 ```
+
+
+> [!NOTE] Authorisation
+> We will protect the apis with Authorisation middleware later in code.
+
 ---------
 ### Step 2: Use Built in sanctum Authentication:
 first apply these commands:
@@ -151,4 +158,125 @@ Route::middleware("auth:sanctum")->group(function () {
 });
 ```
 --------------------------------------
+Step 3: Define morph Relations
 
+we created Reviews table where there is a morph relation between reviews books authors
+and to identify the user who add the review we created one to many relation between user model and review model.
+
+first we create migration file with model:
+```
+php artisan make:model Review -m 
+```
+and add this to identify it as morph:
+`$table->morphs('reviewable');`
+
+then mention columns names in `fillable` array in Review Model.
+and define the morph method:
+```
+public function reviewable(): MorphTo
+    {
+        return $this->morphTo();
+    }
+```
+
+
+and define the user method that refer to the user that add this review:
+```
+public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+```
+
+
+finally in the app/Providers/AppServiceProvider.php file
+we put this :
+
+```
+ public function boot(): void
+    {
+        Relation::enforceMorphMap([
+            'book' => 'App\Models\Book',
+            'author' => 'App\Models\Author',
+        ]);
+    }
+```
+
+
+connect between the reviews and the user who add them
+we add this to reviews migration file
+`$table->foreignId('user_id')->constrained();`
+
+and `user_id` to `$fillable[]` in Review Model
+
+add this function to Review model
+```
+  public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+```
+
+add this function to User Model
+
+```
+  public function reviews(){
+
+        return $this->hasMany(Review::class);
+
+    }
+```
+
+
+to make the morph relation with Book and Author:
+
+put this method in Book model:
+```
+ public function reviews(): MorphMany
+    {
+        return $this->morphMany(Review::class, 'reviewable');
+    }
+```
+
+
+put this method in Author model:
+```
+ public function reviews(): MorphMany
+    {
+        return $this->morphMany(Review::class, 'reviewable');
+    }
+```
+
+now we are ready to implement the Reviews CRUD
+create ReviewController
+as we did previously in the BookController and AuthorController:
+
+and we will need three form requests:
+- ReviewUpdateRequest
+- StoreAuthorReviewRequest
+- StoreBookReviewRequest
+
+and also `ReviewResource`
+
+in this ReviewController we will implement these functions:
+- storeBookReview
+- storeAuthorReview
+- index
+- update
+- destroy
+
+then define routes:
+
+```
+ Route::post('/reviews/books/{book_id}', [ReviewController::class, 'storeBookReview']);
+ Route::post('/reviews/authors/{author_id}', [ReviewController::class, 'storeAuthorReview']);
+ Route::put('/reviews/{id}', [ReviewController::class, 'update']);
+ Route::delete('/reviews/{id}', [ReviewController::class, 'destroy']);
+ Route::get('/reviews', [ReviewController::class, 'index']);
+```
+
+> [!NOTE] Authorisation
+> We will protect the apis with Authorisation middleware later in code.
+
+
+----------------------------------------------
