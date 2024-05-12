@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthorController;
+use App\Http\Controllers\ReviewController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,7 +23,7 @@ Route::post('/user/login', [UserController::class, 'loginUser']);
 
 
 Route::middleware("auth:sanctum")->group(function () {
-   
+    Route::post('/reviews/books/{book_id}', [ReviewController::class, 'storeBookReview']);
 });
 
 Route::get('authors', [AuthorController::class, 'index']);
@@ -37,3 +38,5 @@ Route::get('books/{book}', [BookController::class, 'show']);
 Route::post('books', [BookController::class, 'store']);
 Route::put('books/{book}', [BookController::class, 'update']);
 Route::delete('books/{book}', [BookController::class, 'destroy']);
+
+
