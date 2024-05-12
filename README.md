@@ -61,6 +61,7 @@ public function books()
     }
 ```
 then define few  `Accessors and Mutators`:
+
 for example:
 ```
 first_name:  bushra -> Bushra
@@ -86,11 +87,13 @@ then the controllers:
 before dive into the CRUD implementation, we need few organizational files:
 
 - we created Trait: `ResponseTrait` to define the main responded json format.
+
 for Book CRUD:
 we created customized resource for Book: `BookResource`
 and make validation for requests for store and update methods using:
 - `BookStoreRequest`
 - `BookUpdateRequest`
+
 then we implemented the main CRUD operations.
 
 The same for Author CRUD:
@@ -98,6 +101,7 @@ we created customized resource for Book: `AuthorResource`
 and make validation for requests for store and update methods using:
 - `AuthorStoreRequest`
 - `AuthorUpdateRequest`
+
 then we implemented the main CRUD operations.
 finally we defined the api routes:
 ```
@@ -115,3 +119,36 @@ Route::put('books/{book}', [BookController::class, 'update']);
 Route::delete('books/{book}', [BookController::class, 'destroy']);
 ```
 ---------
+### Step 2: Use Built in sanctum Authentication:
+first apply these commands:
+```
+composer require laravel/sanctum
+php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+```
+then you should add Sanctum's middleware to your `api` middleware group within your application's `app/Http/Kernel.php` file:
+```
+'api' => [
+\Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+],
+```
+
+then define new controller `UserController`:
+
+`php artisan make:controller UserController`
+
+then define the login and register functions.
+check this Link for more details:
+https://www.dbestech.com/tutorials/laravel-sanctum-install-and-login-and-register
+finally add routes for it:
+
+```
+Route::post('/user/register', [UserController::class, 'createUser']);
+Route::post('/user/login', [UserController::class, 'loginUser']);
+
+Route::middleware("auth:sanctum")->group(function () {
+
+//we will add our future apis here
+});
+```
+--------------------------------------
+
