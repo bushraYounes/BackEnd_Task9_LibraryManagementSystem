@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreAuthorReviewRequest;
 use App\Models\Review;
 use Illuminate\Http\Request;
 use App\Http\Traits\ResponseTrait;
@@ -29,5 +30,19 @@ class ReviewController extends Controller
         }
     }
 
-   
+    public function storeAuthorReview(StoreAuthorReviewRequest $request, $authorId)
+    {
+        try {
+            $review = Review::create([
+                'review' => $request->review,
+                'reviewable_type' => 'author',
+                'reviewable_id' => $authorId,
+                'user_id' => Auth::id(),
+            ]);
+            return $this->jsonResponse(new ReviewResource($review), 'Store Success', 200);
+        } catch (\Throwable $th) {
+            Log::error($th);
+            return $this->jsonResponse(null, 'Store Failed', 200);
+        }
+    }
 }

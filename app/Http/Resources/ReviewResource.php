@@ -19,7 +19,7 @@ class ReviewResource extends JsonResource
             'review' => $this->review,
             'reviewable_type' => $this->reviewable_type,
             'reviewable_id' => $this->reviewable_id,
-            'user'=> $this->user->pluck('email')->first(),
+            'user'=> $this->user->email,
         ];
     }
 }
