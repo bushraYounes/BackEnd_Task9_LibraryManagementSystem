@@ -8,7 +8,7 @@ https://documenter.getpostman.com/view/34008000/2sA3JNZzdP
 
 Welcome to the Laravel App! This application provides a RESTful API for Library Management System.
 
-## Setup Instructions
+# <span style="color:green">## Setup Instructions</span>
 
 ```
 git clone https://github.com/bushraYounes/BackEnd_Task9_LibraryManagementSystem.git
@@ -27,11 +27,11 @@ php artisan serve
 ```
 
 ------------------------------------------------------------------------------------------
-## Detailed Documentation
+# <span style="color:green">Detailed Documentation</span>
 
-### Helped in Creating this Documentation "Obsidian note-taking"
+## <span style="color:red">Helped in Creating this Documentation "Obsidian note-taking"</span>
 
-### Step 1: Book & Author CRUDs:
+### <span style="color:blue">Step 1: Book & Author CRUDs:</span>
 
 we have Book and Author models with many-to-many relation, to implement the RESTFull APIs:
 first: we created migration, model, controller by this command:
@@ -126,7 +126,7 @@ Route::delete('books/{book}', [BookController::class, 'destroy']);
 > We will protect the apis with Authorisation middleware later in code.
 
 ---------
-### Step 2: Use Built in sanctum Authentication:
+### <span style="color:blue">Step 2: Use Built in sanctum Authentication:</span>
 first apply these commands:
 ```
 composer require laravel/sanctum
@@ -158,7 +158,7 @@ Route::middleware("auth:sanctum")->group(function () {
 });
 ```
 --------------------------------------
-Step 3: Define morph Relations
+### <span style="color:blue">Step 3: Define morph Relations</span>
 
 we created Reviews table where there is a morph relation between reviews books authors
 and to identify the user who add the review we created one to many relation between user model and review model.
