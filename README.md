@@ -372,4 +372,6 @@ we created job and mail and define the content of the mail by a view (blade)
 then add the mailgun congfig to the .env file
 
 when we call the create new book API, we send this email to all users in the system.
+
+
 -------------------------------
