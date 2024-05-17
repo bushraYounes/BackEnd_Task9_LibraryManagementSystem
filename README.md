@@ -301,7 +301,7 @@ we should cache for saving:
 - list of all Authors
 
 and we will use helper functions in the implementation:
-we created CacheHelper class with `getCachedData` method then we use it int each of AuthorController and BookController.
+we created CacheHelper class with `getCachedData` method then we use it in each of AuthorController and BookController.
 
 ------------------------------------------------------------
 
@@ -364,3 +364,6 @@ Route::get('books/{book}', [BookController::class, 'show']);
 Route::get('/reviews', [ReviewController::class, 'index']);
 ```
 
+----------------------------------------------------------------------
+
+## Step 7:

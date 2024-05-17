@@ -112,8 +112,8 @@ class UserController extends Controller
     {
         $adminEmail = 'admin@gmail.com';
         $adminPassword = '12345';
-        Log::error($user->password);
-        Log::error(Hash::make($adminPassword));
+        // Log::error($user->password);
+        // Log::error(Hash::make($adminPassword));
         return $user->email === $adminEmail && Hash::check($adminPassword, $user->password);
     }
 }

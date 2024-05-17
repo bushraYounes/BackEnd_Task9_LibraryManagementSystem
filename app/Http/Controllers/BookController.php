@@ -8,6 +8,7 @@ use App\Http\Traits\ResponseTrait;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Resources\BookResource;
+use App\Jobs\NewBookNotificationJob;
 use Illuminate\Support\Facades\Cache;
 use App\Http\Requests\BookStoreRequest;
 use App\Http\Requests\BookUpdateRequest;
@@ -49,6 +50,8 @@ class BookController extends Controller
             ]);
 
             $book->authors()->attach($request->author_ids);
+            
+            NewBookNotificationJob::dispatch($book)->onQueue('email');
 
             DB::commit();
             return $this->jsonResponse(new BookResource($book), 'Store Success', 200);
